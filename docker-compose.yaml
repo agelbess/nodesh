@@ -1,0 +1,16 @@
+---
+version: '3'
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    hostname: mongodb
+    container_name: mongodb
+
+  node-aggregation-and-restructure:
+    image: node-aggregation-and-restructure
+    hostname: node-aggregation-and-restructure
+    container_name: node-aggregation-and-restructure
+    depends_on:
+      - mongo
