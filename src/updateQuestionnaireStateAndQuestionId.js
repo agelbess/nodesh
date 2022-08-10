@@ -16,17 +16,27 @@ function updateQuestionnaireState(journeyStateCollection) {
     // Parse questionnaireState to JSON object and update
     let cur = journeyStateCollection.find();
     let bulkOps = journeyStateCollection.initializeUnorderedBulkOp();
+    let count = 0
     while (cur.hasNext()) {
         let doc = cur.next();
-        bulkOps.find({ _id: doc._id }).updateOne(
-            {
-                $set: {
-                    questionnaireState: JSON.parse(doc.questionnaireState)
+        try {
+            let object = JSON.parse(doc.questionnaireState);
+            count++
+            bulkOps.find({_id: doc._id}).updateOne(
+                {
+                    $set: {
+                        questionnaireState: object
+                    }
                 }
-            }
-        );
+            );
+        } catch (e) {
+            // if fails, then it is already an object
+        }
     };
-    return bulkOps.execute();
+    console.log('bulkOps: ' + count)
+    if (count) {
+        return bulkOps.execute();
+    }
 }
 
 // Usage: questionIdToInt(db.<collection>)
