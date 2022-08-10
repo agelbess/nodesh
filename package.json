@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "copyJourneyState": "node src/copyJourneyState.js",
+    "aggregationAndRestructure": "node src/aggregationAndRestructure.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -7,11 +7,13 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.mongouri;
 const database = process.env.database;
 const collection = process.env.collection;
+const tmpCollection = process.env.tmpCollection;
+const dashboardCollection = process.env.dashboardCollection;
 
 async function getConnection() {
-    console.log(uri)
     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
     await client.connect();
+    await client.db(database).collection(tmpCollection).deleteMany({})
     await aggregateData(client); 
     await structureData(client);
     client.close();
@@ -105,7 +107,7 @@ const agg = [
           'questionInfo': '$_id.questionsInfo', 
           'questionIndex': '$_id.questionIndex', 
           'timesQuestionAnswered': '$_id.timesAnswered'
-        }, 
+        },
         'timesAnswerGiven': {
           '$count': {}
         }
@@ -127,7 +129,7 @@ const agg = [
         result[doc].dateAggregated = today;
         batchInsert.push(result[doc]);
     };
-    const aggCollection = client.db("<Database>").collection("tempColl"); // Write the raw aggregated data to a temp table for restructuring. 
+    const aggCollection = client.db(database).collection(tmpCollection); // Write the raw aggregated data to a temp table for restructuring.
     await aggCollection.insertMany(batchInsert);
 }
 
@@ -137,9 +139,9 @@ const agg = [
  * To split this by date, add in a date field (as above) and put this in the 'find' parameter.
  */ 
 async function structureData(client){
-    const tempColl = client.db(database).collection("tempColl");
+    const tempColl = client.db(database).collection(tmpCollection);
     let cur = await tempColl.find().toArray();
-    const structure = client.db("<Database>").collection("<Collection feeding dashboards>");
+    const structure = client.db(database).collection(dashboardCollection);
     let bulkOps = await structure.initializeUnorderedBulkOp();
     cur.forEach(function (doc) {
         bulkOps.find({questionIndex: doc._id.questionIndex}).upsert().updateOne(
