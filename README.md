@@ -1,10 +1,5 @@
 # Node runner
 
-## Run locally
-
-    > npm i
-    > node-aggregation-and-restructure.sh
-
 ## Build the images
 
     > docker-build.sh
@@ -20,6 +15,9 @@ Then get the container id and
 ## Operations
 
 ### updateQuestionnaireStateAndQuestionId.js
+
+> install mongosh first, use wsl or linux (preferably) and run the command that 
+> is visible in the Dockerfile
 
 This file contains the mongosh script that updates the questionnaireState and questionid
 of the xx_guidedSelling collections.
